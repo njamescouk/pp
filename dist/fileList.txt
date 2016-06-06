@@ -1,0 +1,10 @@
+pp\lex.yy.c
+pp\pp.cpp
+pp\pp.exe
+pp\pp.l
+pp\doc\devDoc.css
+pp\doc\pp.html
+pp\doc\pp.txt
+pp\doc\example.txt
+pp\doc\pp.txt.pp
+pp\gcc\compile.bat

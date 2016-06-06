@@ -1,0 +1,140 @@
+body
+{
+    background-color: LightYellow;
+    max-width: 30em;
+    margin-left: 10em;
+    margin-right: auto;
+    text-align: justify;
+}
+
+h1, h2
+{
+    font-size: large;
+}
+
+h3, h4
+{
+    font-size: medium;
+}
+
+pre, pre.programlisting, pre.synopsis 
+{
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: #000000;
+    float: left;
+    line-height: 1;
+    margin-top: 0.1em;
+    min-width: 90%;
+    padding: 1em 1em 1.5em;
+}
+
+p, h1, h2, h3 , h4, dl
+{
+    clear: both;
+}
+
+div.insertedFile
+{
+    border: 1px dotted darkgray;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+a:link 
+{
+    color: #005000;
+}
+
+a:visited 
+{
+    color: #A05010;
+}
+
+a:focus 
+{
+    background-color: #EEEE99;
+    color: #009900;
+}
+
+a:hover 
+{
+    background-color: #EEEE99;
+    border: 1px dashed #DDDDDD;
+    color: #009900;
+}
+
+a 
+{
+    border: 1px dotted #DDDDDD;
+    text-decoration: none;
+}
+
+ul
+{
+    list-style-type: square;
+}
+
+nav#TOC ul
+{
+    list-style-type: none;
+    padding-left: 2em;
+}
+    
+nav#TOC>ul
+{
+    padding-left: 0;
+}
+
+h1, h2
+{
+    padding-top: 1em;
+}
+
+table
+{
+    width: 40em;
+    text-align: left;
+    vertical-align: top;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+    
+tbody
+{
+    vertical-align: top;
+}
+    
+th
+{
+    border: 1px solid grey;
+    padding: .3em;
+}
+    
+td
+{
+    border: 1px dotted grey;
+    padding: .3em;
+}
+
+tr.even
+{
+    background-color: PaleGreen;
+}
+
+row[parity="even"]
+{
+    background-color: PaleGreen;
+}
+
+p
+{
+    margin-top: .25em;
+    margin-bottom: .25em;
+}
+
+.warning
+{
+    color: red;
+    font-size: large;
+}

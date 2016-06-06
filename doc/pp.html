@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Nick James">
+  <title>pp</title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="devDoc.css">
+</head>
+<body>
+<header>
+<h1 class="title">pp</h1>
+<h2 class="author">Nick James</h2>
+<h3 class="date">21-10-2011</h3>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#use-case"><span class="toc-section-number">2</span> Use case</a></li>
+<li><a href="#installation"><span class="toc-section-number">3</span> Installation</a></li>
+<li><a href="#synopsis"><span class="toc-section-number">4</span> Synopsis</a></li>
+<li><a href="#action"><span class="toc-section-number">5</span> Action</a></li>
+<li><a href="#example"><span class="toc-section-number">6</span> Example</a></li>
+<li><a href="#bugs"><span class="toc-section-number">7</span> Bugs</a></li>
+<li><a href="#programmers-notes"><span class="toc-section-number">8</span> Programmers notes</a><ul>
+<li><a href="#building"><span class="toc-section-number">8.1</span> Building</a></li>
+</ul></li>
+<li><a href="#colophon"><span class="toc-section-number">9</span> Colophon</a></li>
+</ul>
+</nav>
+<h1 id="introduction"><a href="#TOC"><span class="header-section-number">1</span> Introduction</a></h1>
+<p>pp copies it's input to stdout, optionally incorporating output of arbitrary programs.</p>
+<p>This looks like a simple scripting problem, but I've got a c++ hammer.</p>
+<h1 id="use-case"><a href="#TOC"><span class="header-section-number">2</span> Use case</a></h1>
+<p>When writing documentation using pandoc it is handy to insert mechanically gleaned lumps of text into the document (like this one); ensuring that examples, output, source code or what have you are up to date.</p>
+<p>No doubt there are other ways pp could be used.</p>
+<h1 id="installation"><a href="#TOC"><span class="header-section-number">3</span> Installation</a></h1>
+<p>Windows: - Unzip pp.zip, put pp.exe somewhere on your path.</p>
+Linux -
+<pre>flex -o../lex.yy.c ../pp.l
+g++ -o pp ../pp.cpp ../lex.yy.c
+</pre> 
+<p>and put pp on your PATH</p>
+<h1 id="synopsis"><a href="#TOC"><span class="header-section-number">4</span> Synopsis</a></h1>
+<pre><code>pp filename</code></pre>
+<h1 id="action"><a href="#TOC"><span class="header-section-number">5</span> Action</a></h1>
+<p>pp preprocesses it's argument file.</p>
+<p>This is a matter of copying it's input to stdout, substituting lines beginning with !!PP with the output of the command as executed by the command processor. This incorporates the program output into the contents of the file being written to stdout.</p>
+<p>If you need to suppress the last newline in the output of a !!PP cmd, use !!PPS instead.</p>
+<p>If you need !!PP starting on column 1 of your output, use <code>!!PPecho !!PP</code></p>
+<h1 id="example"><a href="#TOC"><span class="header-section-number">6</span> Example</a></h1>
+<p>For file example.txt:</p>
+<pre><code>A text file containing a !!PP directive
+!!PP echo hello world
+!!PPS echo look, no extra newline
+Thank you and good bye.
+
+!!PPdate /t</code></pre>
+<p><code>pp example.txt</code> gives us:</p>
+<pre><code>A text file containing a !!PP directive
+hello world
+
+look, no extra newline
+Thank you and good bye.
+
+05/06/2016 
+</code></pre>
+<h1 id="bugs"><a href="#TOC"><span class="header-section-number">7</span> Bugs</a></h1>
+<ul>
+<li><p>The results of the command executed are <span class="warning">potentially disastrous</span>. Stick to type/cat, grep, sed and echo.</p></li>
+<li><p>The supplied binary may have dll dependencies that mean you have to recompile the source on your machine.</p></li>
+</ul>
+<h1 id="programmers-notes"><a href="#TOC"><span class="header-section-number">8</span> Programmers notes</a></h1>
+<p>This is essentially a call to yylex(). The lex is as follows:</p>
+<pre class="sourceCode lex"><code class="sourceCode lex"><span class="bn">%{</span>
+<span class="ot">#include &lt;string&gt;</span>
+<span class="bn">%}</span>
+
+<span class="kw">%option noyywrap</span>
+<span class="kw">%x GOT_PP</span>
+<span class="kw">%x GOT_PPS</span>
+
+
+<span class="bn">%%</span>
+<span class="st">^!!PP</span>           { 
+                    BEGIN(GOT_PP); 
+                }
+
+<span class="st">^!!PPS</span>           { 
+                    BEGIN(GOT_PPS); 
+                }
+
+<span class="st">&lt;GOT_PP&gt;[^\n]*</span>  { 
+                    <span class="co">/* </span>
+<span class="co">                    we use popen() as output from system() </span>
+<span class="co">                    doesn&#39;t turn up where we want it </span>
+<span class="co">                    */</span>
+                    FILE *pfp = _popen(yytext, <span class="st">&quot;r&quot;</span>);
+                    <span class="kw">if</span> (pfp != <span class="dv">0</span>)
+                    {
+                        <span class="kw">while</span> (!feof(pfp) &amp;&amp; !ferror(pfp))
+                        {
+                            <span class="dt">int</span> c = fgetc(pfp);
+                            <span class="kw">if</span> (c != EOF)
+                                putchar(c);
+                        }
+                        _pclose(pfp);
+                    }
+
+                    BEGIN(INITIAL);
+                }
+
+<span class="st">&lt;GOT_PPS&gt;[^\n]*</span> { 
+                    <span class="co">/* </span>
+<span class="co">                    we use popen() as output from system() </span>
+<span class="co">                    doesn&#39;t turn up where we want it </span>
+<span class="co">                    */</span>
+                    FILE *pfp = _popen(yytext, <span class="st">&quot;r&quot;</span>);
+                    <span class="kw">if</span> (pfp != <span class="dv">0</span>)
+                    {
+                        std::string res;
+                        <span class="kw">while</span> (!feof(pfp) &amp;&amp; !ferror(pfp))
+                        {
+                            <span class="dt">int</span> c = fgetc(pfp);
+                            <span class="kw">if</span> (c != EOF)
+                            {
+                                <span class="dt">char</span> s[<span class="dv">2</span>];
+                                s[<span class="dv">0</span>] = (<span class="dt">char</span>)c;
+                                s[<span class="dv">1</span>] = <span class="dv">0</span>;
+
+                                res.append(s);
+                            }
+                        }
+
+                        size_t resLen = res.length();
+                        <span class="kw">if</span> (resLen &gt; <span class="dv">0</span> &amp;&amp; res[resLen<span class="dv">-1</span>] == <span class="ch">&#39;\n&#39;</span>)
+                            res = res.substr(<span class="dv">0</span>, resLen<span class="dv">-1</span>);
+                        fprintf(stdout, <span class="st">&quot;%s&quot;</span>, res.c_str());
+                    }
+                    _pclose(pfp);
+
+                    BEGIN(INITIAL);
+                }
+
+<span class="st">.</span>               {
+                    ECHO;
+                }</code></pre>
+<h2 id="building"><a href="#TOC"><span class="header-section-number">8.1</span> Building</a></h2>
+<pre><code>flex pp.l
+g++ -o pp.exe pp.cpp lex.yy.c</code></pre>
+<p>
+or use gcc\compile.bat
+</p>
+
+<h1 id="colophon"><a href="#TOC"><span class="header-section-number">9</span> Colophon</a></h1>
+Produced with:
+<pre>
+pp pp.txt.pp > pp.md
+pandoc --toc -N -t html5 -c devDoc.css -s -o pp.html pp.md
+
+2016-06-05 22:58:55
+</pre>
+
+
+</body>
+</html>

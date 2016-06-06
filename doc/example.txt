@@ -1,0 +1,6 @@
+A text file containing a !!PP directive
+!!PP echo hello world
+!!PPS echo look, no extra newline
+Thank you and good bye.
+
+!!PPdate /t
