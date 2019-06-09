@@ -3,4 +3,4 @@ A text file containing a !!PP directive
 !!PPS echo look, no extra newline
 Thank you and good bye.
 
-!!PPdate /t
+!!PPdate

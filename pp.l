@@ -1,5 +1,12 @@
 %{
 #include <string>
+#ifdef GCOMPILE
+#define POPEN popen
+#define PCLOSE pclose
+#else
+#define POPEN _popen
+#define PCLOSE _pclose
+#endif
 %}
 
 %option noyywrap
@@ -21,7 +28,7 @@
                     we use popen() as output from system() 
                     doesn't turn up where we want it 
                     */
-                    FILE *pfp = _popen(yytext, "r");
+                    FILE *pfp = POPEN(yytext, "r");
                     if (pfp != 0)
                     {
                         while (!feof(pfp) && !ferror(pfp))
@@ -30,7 +37,7 @@
                             if (c != EOF)
                                 putchar(c);
                         }
-                        _pclose(pfp);
+                        PCLOSE(pfp);
                     }
 
                     BEGIN(INITIAL);
@@ -41,7 +48,7 @@
                     we use popen() as output from system() 
                     doesn't turn up where we want it 
                     */
-                    FILE *pfp = _popen(yytext, "r");
+                    FILE *pfp = POPEN(yytext, "r");
                     if (pfp != 0)
                     {
                         std::string res;
@@ -63,7 +70,7 @@
                             res = res.substr(0, resLen-1);
                         fprintf(stdout, "%s", res.c_str());
                     }
-                    _pclose(pfp);
+                    PCLOSE(pfp);
 
                     BEGIN(INITIAL);
                 }
